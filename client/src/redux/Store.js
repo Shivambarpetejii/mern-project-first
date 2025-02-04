@@ -1,10 +1,20 @@
-import { configureStore } from '@reduxjs/toolkit'
+import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import  userReducer  from './user/UserSlice';
+import {persistCombineReducers, persistReducer, persistStore} from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+
+const rootReduccer = combineReducers({user:userReducer})
+
+const persistConfig ={
+  key: 'root',
+  storage,
+  version :1,
+}
+
+const persistedReducer = persistReducer(persistConfig, rootReduccer)
 
 export const store = configureStore({
-  reducer: {
-    user:userReducer
-  },
+  reducer: persistedReducer,
 
 //   this is only check 
  middleware: (getDefaultMiddleware)=>
@@ -13,3 +23,5 @@ export const store = configureStore({
     }),
 
 });
+
+export const persistor = persistStore(store)
